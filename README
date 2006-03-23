@@ -1,0 +1,1119 @@
+ 
+                        ____  _  _  ___  __
+                       (  _ \( \/ )/ __)(  )
+                        )___/ )  ( \__ \ )(__
+                       (__)  (_/\_)(___/(____)
+                                   
+                 PARSIMONIOUS XML SHORTHAND LANGUAGE
+
+           $Id: README,v 1.17 2005/02/10 21:37:50 thor Exp $
+
+
+PXSL ("pixel") is a convenient shorthand for writing markup-heavy XML
+documents.  The following document explains why PXSL is needed and
+shows you how to use it.  For additional information, such as the FAQ
+list, visit the community site:
+
+    http://community.moertel.com/ss/space/pxsl
+
+You'll get more out of this document if you read it from start to
+finish, but you can stop anywhere after the "Gentle Introduction to
+PXSL" and be able to take advantage of PXSL in your documents.  The
+later sections explain PXSL's advanced features.  If you're willing to
+invest some time in learning them, you will have at your disposal new
+and powerful ways to create and refactor XML documents.  The advanced
+features are more complicated to master, but they can greatly reduce
+the complexity of your documents.
+
+
+
+* Table of Contents
+
+  * Getting PXSL
+  * Getting help
+  * License
+  * Getting or building the PXSL tools
+  * Gentle Introduction to PXSL
+    - Why PXSL ?
+    - A closer look at PXSL
+    - Using PXSL documents
+  * Advanced topics
+    - Element defaults provide convenient, customizable shortcuts
+        Using element defaults to create attribute shortcuts
+        Using element defaults to create virtual elements
+        Making and using your own element defaults
+        Built-in element defaults for XSLT stylesheets
+    - Advanced quoting with << >> and <{ }>
+    - Macro facility
+    - Advanced macros and passing parameters with the <( )> delimiters
+    - More advanced macros and functional programming
+    - Automatic PXSL-to-XML conversion via Make
+  * Reference:  pxlscc
+  * Reference:  PXSL syntax
+  * Authors
+
+
+
+* Getting PXSL
+
+The most-recent official version of PXSL can always be found here:
+
+    http://community.moertel.com/pxsl/
+
+By the way, you pronounce PXSL like "pixel".
+
+
+* Getting help
+
+If you need help with PXSL, there is a discussion site for PXSL
+users and developers.  Feel free to ask questions and leave your
+comments:
+
+    PXSL Community Forum
+    http://community.moertel.com/ss/space/pxsl
+
+    PXSL FAQs
+    http://community.moertel.com/ss/space/PXSL+FAQs
+
+
+* LICENSE
+
+Copyright (C) 2003--2005 Thomas Moertel & Bill Hubauer.
+
+The PXSL toolkit is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of
+the License, or (at your option) any later version.
+
+The text of the GNU GPL may be found in the LICENSE file,
+included with this software.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+Except as provided for under the terms of the GNU GPL, all rights
+are reserved worldwide.
+
+
+* Getting or building the PXSL tools
+
+If you don't want to build the PXSL tools from source code, you can
+download one of the pre-built binary packages on the PXSL web site.
+If a binary package isn't available for your computing platform of
+choice, you can use the following procedure to build the PXSL tools
+for your platform.
+
+In order to build the tools you will need the following:
+
+  - A PXSL source tarball (typically named "pxsl-{version}.tar.gz")
+    http://community.moertel.com/pxsl/
+
+  - GHC Haskell compiler, version 5.04.3 or greater
+    http://www.haskell.org/ghc/
+
+  - Make (GNU's flavor preferred)
+    Windows users: install Cygwin, which includes GNU make:
+    http://www.cygwin.com/
+
+Once GHC and Make are installed on your computer, uncompress the
+tarball and build the project via the "make" command:
+
+    $ tar zxvf pxsl-{version}.tar.gz
+    $ cd pxsl-{version}
+    $ make
+
+(Replace {version} with the version of PXSL that you downloaded.)
+
+That's it.  You should now have a fully functional version of pxslcc.
+
+
+* Gentle Introduction to PXSL
+
+PXSL ("pixel") is a convenient shorthand for writing markup-heavy XML
+documents.  This introduction assumes that you are familiar with XML.
+If you want a refresher, see the introductions on XML available here:
+
+    http://xml.coverpages.org/xmlIntro.html
+
+** Why PXSL ?
+
+XML is a descendant of the markup language SGML and inherits its
+ancestor's historical bias toward marking up textual documents.
+However, XML is becoming an increasingly popular medium for the
+representation of non-textual information such as metadata (RSS, XSD,
+RELAX-NG), remote procedure calls (SOAP), and even information
+that looks much like programming languages (XSLT, SVG, MathML).
+For these uses, XML's text-centric syntax gets in the way.
+
+Consider, for example, this snippet of MathML:
+
+    MathML in XML
+
+    <declare type="fn">
+      <ci> f </ci>
+      <lambda>
+        <bvar><ci> x </ci></bvar>
+        <apply>
+          <plus/>
+          <apply>
+            <power/>
+            <ci> x </ci>
+            <cn> 2 </cn>
+          </apply>
+          <ci> x </ci>
+          <cn> 3 </cn>
+        </apply>
+      </lambda>
+    </declare>
+
+Notice something about MathML's structure: There is more markup than
+text.  In fact, the only text in the snippet is "f x x2 x3"; the rest
+is markup.  As you can see above, XML's document-centric style of
+markup, in which the markup is delimited from the flow of surrounding
+text, becomes a hindrance when markup is in the majority.
+
+PXSL, by contrast, was designed specifically to handle this case well.
+It makes dense markup easy because it assumes that everything is
+markup to begin with.  You need only delimit the few portions of text
+that are mixed into the flow of surrounding markup.
+
+In other words, PXSL is what you get when you turn XML inside out:
+
+    XML                             PXSL
+
+    <markup>text</markup>           markup <<text>>
+
+Let's see how this inside-out transformation simplifies our MathML
+example from above:
+
+    MathML in XML                   MathML in PXSL
+
+    <declare type="fn">             declare -type=fn
+      <ci> f </ci>                    ci << f >>
+      <lambda>                        lambda
+        <bvar><ci> x </ci></bvar>       bvar
+        <apply>                           ci << x >>
+          <plus/>                       apply
+          <apply>                         plus
+            <power/>                      apply
+            <ci> x </ci>                    power
+            <cn> 2 </cn>                    ci << x >>
+          </apply>                          cn << 2 >>
+          <ci> x </ci>                    ci << x >>
+          <cn> 3 </cn>                    cn << 3 >>  
+        </apply>
+      </lambda>
+    </declare>
+
+There are two things to notice about the PXSL version in comparison
+to the XML version.  First, the PXSL version is shorter.  Second, and
+most important, PXSL is comparatively free of noisy characters like < >
+/ and ".  In PXSL, noise is the exception rather than the rule.
+
+
+** A closer look at PXSL
+
+Writing PXSL is simple.  If you know how to write XML, you can write
+PXSL.  In fact, PXSL is XML, just written in a different, inside-out
+syntax.  Let's see how it works by way of comparison.
+
+First, every XML document and hence every PXSL document has a root
+element.  Here is a tiny document that has a root element and nothing
+else:
+
+    XML                             PXSL
+
+    <doc/>                          doc
+
+If the document contains other elements, they are simply placed
+underneath the root element, but indented to indicate that the root
+element contains them.  In XML this indenting is optional, but most
+people do it anyway because it is an established practice that makes
+documents easier to understand.  In PXSL however, the indenting is
+mandatory because indentation determines which elements contain
+others.  (This requirement is what enables PXSL to do away with the
+closing tags that XML uses to determine containment.)
+
+    <doc>                           doc
+      <title/>                        title
+      <body/>                         body
+    </doc>
+
+If an element has attributes, they are written in the form of
+-name=value in PXSL.
+
+    <doc>                           doc
+      <title/>                        title
+      <body id="db13"/>               body -id=db13
+    </doc>
+
+If an attribute value contains whitespace, it must be quoted within
+the literal delimiters << and >>.
+
+    <doc keywords="x y z">          doc -keywords=<<x y z>>
+      <title/>                        title
+      <body id="db13"/>               body -id=db13
+    </doc>
+
+Now let's consider text.  If an element contains text, the text is
+quoted in << and >> delimiters and indented underneath the element
+that owns the text.
+
+    <doc keywords="x y z">          doc -keywords=<<x y z>>
+      <title/>                        title
+      <body id="db13">                body -id=db13
+        This is text.                   <<This is text.>>
+      </body>
+    </doc>
+
+The << and >> delimiters are powerful.  The text within them,
+including all whitespace, is quoted verbatim.  The text can span
+multiple lines and even stray outside of the outline-like indentation
+hierarchy.  If you place sections of quoted text next to one another
+<<like>> <<so>> they effectively become one section <<likeso>>.
+
+    <doc keywords="x y z">          doc -keywords=<<x y z>>
+      <title>                         title
+        My title                        <<My title>>
+      </title>                        body -id=db13
+      <body id="db13">                  <<This is multi-
+        This is multi-                  line text.>>
+        line text.                    
+      </body>
+    </doc>
+
+If you want to add an XML comment, introduce it with the -- delimiter.
+The comment extends to the end of the line.
+
+    <!-- my document -->            -- my document
+    <doc keywords="x y z">          doc -keywords=<<x y z>>
+      <title>                         title
+        My title                        <<My title>>
+      </title>                        body -id=db13
+      <body id="db13">                  <<This is multi-
+        This is multi-                  line text.>>
+        line text.                    
+      </body>
+    </doc>
+
+You can also use the # delimiter, which creates a PXSL comment that is
+invisible in XML:
+
+    <!-- my document -->            -- my document
+    <doc keywords="x y z">          doc -keywords=<<x y z>>
+      <title>                         title
+        My title                        <<My title>>
+      </title>                        body -id=db13
+      <body id="db13">                  <<This is multi-
+        This is multi-                  line text.>>
+        line text.
+      </body>                       # hidden comment, for
+    </doc>                          # PXSL readers only
+
+
+That's it.  You now know everything necessary to create PXSL
+documents.
+
+PXSL lets you do more, however, and if you want to take full advantage
+of it, read the Advanced Topics section.  For now, though, let's
+consider how to use PXSL documents with your existing XML-based
+software.
+
+
+** Using PXSL documents
+
+Using PXSL documents is easy because they are really XML documents in
+disguise.  (In fact, you may wish to consider PXSL as a convenient
+shorthand for writing XML.)  Any program that can read XML can handle
+PXSL.  All you need to do is remove the disguise first so that the
+programs will recognize your documents for what they are.
+
+The included tool pxlscc (short for PXSL conversion compiler) performs
+this task.  Just feed it a PXSL document, and it returns the
+equivalent plain-old XML document:
+
+    $ pxlscc document.pxsl > document.xml
+
+You can then use the returned document in your XML-aware programs.
+
+If you know how to use Make or Ant or similar tools, you can easily
+automate this process so that your PXSL files are automagically
+converted into XML when needed.
+
+
+* Advanced topics
+
+The following sections describe the more advanced capabilities of PXSL
+that can make your life easier.  The element defaults, in particular,
+can significantly reduce markup burdens.
+
+
+** Element defaults provide convenient, customizable shortcuts
+
+Most XML documents conform to established vocabularies.  Once you
+become familiar with your documents' vocabularies, you'll probably
+find that certain elements and attributes always or often occur
+together -- to the point where typing them becomes repetitive.  For
+example, in XHTML, almost all img elements take the following form:
+
+    <img src="..." alt="..." [ additional attributes here ] />
+
+Or, in PXSL:
+
+    img -src=... -alt=... [ additional attributes here ]
+
+So, why should you have to type in the repetitive src="" and alt=""
+every time you use an img element?  With PXSL's element defaults,
+you don't need to.
+
+*** Using element defaults to create attribute shortcuts
+
+Element defaults are shortcuts that are defined in a separate file
+using a simple syntax.  (For the specifics of creating and loading
+these files, see the Reference section on pxslcc.)  For example:
+
+    img = img src alt
+
+This shortcut allows you optionally to leave off the -src= and -alt=
+part whenever you write the PXSL markup for an img element.  For
+example, with this definition in place, all three of these PXSL
+statements mean the exact same thing:
+
+    img -src=/images/logo.png -alt=Logo
+    img /images/logo.png -alt=Logo
+    img /images/logo.png Logo
+
+All of them convert into the same XHTML:
+
+    <img src="/images/logo.png" alt="Logo"/>
+    <img src="/images/logo.png" alt="Logo"/>
+    <img src="/images/logo.png" alt="Logo"/>
+
+In other words, shortcuts let you pass attribute values by position
+instead of by the -name=value syntax.  You provide only the values,
+and the shortcut provides the corresponding -name= parts behind the
+scenes.
+
+But there are a couple of restrictions to keep in mind.  First,
+attribute values passed by position must come first, before any values
+passed using the -name=value syntax, and they must occur in the same
+order as declared in the shortcut definition.
+
+Second, you can only pass values this way if they do not contain
+whitespace.  If a value contains whitespace, you must use the
+-name=value syntax and quote the value: -name=<<my value>> (There is
+an advanced feature, the <( )> delimiters, that overcome this
+restriction.  They are described in the section on advanced macros,
+later in this document.)
+
+*** Using element defaults to create virtual elements
+
+You can also use the element defaults to create your own virtual
+elements.  If you work in XHTML, you have probably noticed that the
+<a> element is used to create both hypertext links and anchors.  For
+example:
+
+   <a name="anchor-name">Anchored text</a>
+   <a href="#anchor-name">Link to anchored text</a>
+
+Why not make these two uses more obviously distinct while cutting down
+on markup at the same time?  Let's create virtual "anchor" and "hlink"
+elements that do just that:
+
+   anchor = a name
+   hlink = a href
+
+Now we can use these elements in PXSL to express the above XHTML more
+clearly:
+
+   anchor anchor-name <<Anchored text>>
+   hlink #anchor-name <<Link to anchored text>>
+
+(Notice that we used << and >> in an advanced way that lets us put
+quoted text on the same line as the element that contains it.  This is
+discussed further in the "Advanced quoting" section.)
+
+When we convert the above PXSL into XML, it results in exactly the
+same XHTML that we discussed earlier:
+
+   <a name="anchor-name">Anchored text</a>
+   <a href="#anchor-name">Link to anchored text</a>
+
+
+*** Making and using your own element defaults
+
+Making your own shortcuts is easy.  Just create a file that contains
+lines of this form:
+
+    element-name = preferred-element-name opt-attr-1 opt-attr-2 ...
+
+It's a good idea to extend the file's name with a suffix of ".edf",
+which is short for "element defaults," but feel free to ignore this
+convention.
+
+For example, we might create a "xhtml-shortcuts.edf" file to capture
+our shortcuts from above:
+
+    # File: xhtml-shortcuts.edf
+
+    anchor = a name
+    hlink = a href
+
+(Notice that you can place comment lines in your .edf files by
+starting them with a "#" character.)
+
+To use the shortcuts, tell pxslcc to --add them to the set of active
+element defaults that are used when processing your PXSL files:
+
+    $ pxslcc --add=xhtml-shortcuts.edf my-doc.pxsl > my-doc.xhtml
+
+You can --add more than one set of defaults, and pxslcc will use them
+all.
+
+*** Built-in element defaults for XSLT stylesheets
+
+PXSL was originally created to reduce the verbosity of XSLT
+stylesheets.  As a result, pxslcc has a built-in set of element
+defaults for XSLT that you can enable by passing the --xslt
+flag:
+
+    $ pxslcc --xslt stylesheet.pxsl > stylesheet.xsl
+
+The built-in defaults provide two benefits: First, you can use element
+names from within the XSLT namespace without having to use the xsl:
+prefix.  Second, you can pass common required attributes like "select"
+and "match" by position.
+
+Together, these benefits result in massive markup reductions, making
+your life as an XSLT author much easier.  Compare the following
+snippet of XSLT in XML
+
+    <xsl:template match="/">
+      <xsl:for-each select="//*/@src|//*/@href">
+        <xsl:value-of select="."/>
+        <xsl:text>&#10;</xsl:text>
+      </xsl:for-each>
+    </xsl:template>
+
+with the same snippet rewritten in PXSL (using --xslt defaults):
+
+    template /
+      for-each //*/@src|//*/@href
+        value-of .
+        text <<&#10;>>
+
+Among the many XSLT shortcuts enabled by the --xslt flag, the above
+PXSL snippet uses the following:
+
+    template = xsl:template match name
+    for-each = xsl:for-each select xml:space
+    value-of = xsl:value-of select disable-output-escaping
+    text     = xsl:text disable-output-escaping
+
+To see the complete list of XSLT shortcuts, --export them:
+
+    $ pxslcc --xslt --export
+
+
+** Advanced quoting with the << >> and <{ }> delimiters
+
+PXSL has two kinds of quoting delimiters that can be used to quote
+mixed and text-only content.  Both are described in this section.
+
+*** XML quoting << >> delimiters
+
+The << and >> delimiters not only let you insert text into your PXSL
+documents, but also let you insert raw, full-featured XML.  This works
+great for those times when it's just easier to write a bit of XML than
+its PXSL equivalent.  For example, if you're writing an XSLT
+stylesheet that generates XHTML output, you'll certainly want to use
+PXSL to express the markup-dense xsl:stylesheet directives.  But, if
+you need to drop in some XHTML boilerplate that a designer gave you to
+use in the page footer, just copy-and-paste it using << and >>:
+
+    <<
+       <div class="footer">
+       Copyright (C) 2003 Blah, Blah, Blah, Inc.
+       <!--  lots more boilerplate ... -->
+       </div>
+    >>
+
+Another great use for the << >> delimiters is to drop XML specials
+like processing instructions into your code:
+
+    <<<?xml version="1.0" encoding="ISO-8859-1"?>>>
+
+The above PXSL is equivalent to the following XML:
+
+    <?xml version="1.0" encoding="ISO-8859-1"?>
+
+Because the << >> delimiters quote XML, you must follow XML's
+syntactical rules when using them.  That means that if you
+want to include literal less-than "<" and ampersand "&"
+characters, you must use character entity references:
+
+    << less-than: &lt; >>
+    << ampersand: &amp; >>
+
+*** Verbatim text <{ }> delimiters (CDATA)
+
+When copy-and-pasting blocks of text from outside sources, you must be
+careful to "escape" any literal "<" and "&" characters that may be
+within.  This can be annoying, especially for large blocks of text.
+Another place where this requirement is burdensome is in mathematical
+expressions that sometimes occur in XSLT markup:
+
+    xsl:test -when=<< $i &lt; 5 >>
+
+For this reason, PXSL provides the verbatim-text delimiters <{ and }>
+that perform the same function as XML's more verbose CDATA delimiters:
+
+    XML                                   PXSL
+
+    <![CDATA[ toast & jelly ]]>           <{ toast & jelly }>
+
+Any characters that you place inside of <{ }> will come out as a
+character literals.  PXSL will take care of any escaping that is
+necessary to prevent XML from misinterpreting your text as markup.
+For example, we can rewrite the above XSLT snippet more clearly
+using the verbatim-text delimiters:
+
+    xsl:test -when=<{ $i < 5 }>
+
+These delimiters are especially handy for including examples of XML
+markup in your documents.  Like << >>, <{ }> can handle large blocks
+of multi-line text and preserves whitespace and indentation.
+
+*** Text-content shortcut
+
+As you may have noticed from the MathML example at the beginning of
+this document, if an element contains text, you can declare the
+text on the same line as the element.  This saves space and often
+reads more easily:
+
+    NORMAL                         SHORTCUT
+
+    h1                             h1 <<Chapter 1>>
+      <<Chapter 1>>                h2 <{Sections 1 & 2}>
+    h2
+      <{Sections 1 & 2}>
+
+
+** Macro facility
+
+PXSL has a simple macro facility that you can use to reorganize your
+markup and "factor out" boilerplate.  A macro is defined with a
+leading comma and a trailing equals sign, like so:
+
+    ,name =
+        body-of-the-macro
+
+where "name" is the name of the macro and "body-of-the-macro" can be
+any series of elements and text.  Macros can be defined at any level
+of nesting within a PXSL document, but they are only visible (i.e.,
+available for use) at the level where they were defined and at levels
+nested underneath.  (If two macros with the same name are visible at
+the same time, the deepest one will hide the other, or if both are on
+the same level, the one defined latest in the document will hide the
+earlier.  In other words, the policy is "the last, deepest one wins.")
+
+*** Using macros (i.e., macro expansion)
+
+To use a macro, simply refer to it by name anywhere that an element
+can be used:
+
+    ,hello =
+      <<Hello!>>
+
+    html
+      head
+        title
+          ,hello
+      body
+        <<Hello! Again!>>
+
+When processed with pxslcc (using the --indent flag), this is the
+result:
+
+    <html>
+      <head>
+        <title>Hello!</title>
+      </head>
+      <body>Hello! Again!</body>
+    </html>
+
+Note that the macro definition has been removed and that the reference
+to the macro inside of the "title" element has been replaced by the
+macro's body.  This is called macro expansion.
+
+Macros don't need to be defined before they are expanded, as long as
+they are visible from the sites (locations) where they are expanded.
+Also, macros can call other macros:
+
+    ,hello =
+      <<Hello!>>
+
+    html
+      ,head
+      ,body
+
+      ,head =
+         head
+          title
+            ,hello
+
+      ,body =
+        body <<Hello! Again!>>
+
+This snippet results in exactly the same XML as the one above.
+Nevertheless, we have made a number of organizational changes.
+The "head" and "body" within the "html" element have been
+factored out into the macros ,head and ,body and relocated within
+the document.  These macros are defined within the "html"
+element, after the sites where they are expanded.  Note that the
+,head macro calls upon the ,hello macro that we defined earlier.
+
+Although contrived in this small example, factoring out blocks of
+markup makes the structure of large documents easier to understand and
+manage because you are free to move them around, subdivide them
+further, and reuse them in many locations.
+
+*** Parameterized macros
+
+Macros can take any number of parameters, which allows you to customize
+their definitions.
+
+**** Using named parameters
+
+For example, we could customize the definition of the ,head macro that
+we used above to accept the title as a parameter:
+
+    ,make-head my-title =
+       head
+        title
+          ,my-title
+
+Now we can use it to create a head element that contains any title
+that we want:
+
+    ,make-head -my-title=<<This is my title.>>
+
+Note that we pass parameters to a macro just like we pass attributes
+to an element definition.
+
+**** Using the magic, implicit BODY parameter
+
+But what if we want to pass more than strings?  What if we want to
+pass large sections of documents as parameters?  We can do this using
+the special BODY parameter that all macros have implicitly:
+
+    ,make-section title =
+      section
+        -- start of section
+        title
+          ,title
+        ,BODY
+        -- end of section
+
+(Note that the BODY parameter must be spelled exactly "BODY" and in
+all caps.)  The BODY parameter accepts any content defined underneath
+the macro-expansion site (i.e., the body of the macro-expansion
+invocation):
+
+    ,make-section -title=<<This is my title>>
+      p <<This is a paragraph.>>
+      p <<And another.>>
+      p <<And so on.>>
+
+The result of calling this macro is the following XML:
+
+    <section>
+      <!-- start of section -->
+      <title>This is my title</title>
+      <p>This is a paragraph.</p>
+      <p>And another.</p>
+      <p>And so on.</p>
+      <!-- end of section -->
+    </section>
+
+*** Advanced macros and passing parameters with the <( )> delimiters
+
+As we showed earlier, one way of passing document fragments to macros
+is via the implicit BODY parameter that all macros have.  Another is
+to pass them as normal arguments using the <( )> delimiters, which let
+you group PXSL document fragments into chunks that you can pass as
+arguments.
+
+For example, let's redefine the make-section macro we defined above to
+accept the body of the section as a normal parameter:
+
+    ,make-section title body =
+      section
+        -- start of section
+        title
+          ,title
+        body
+          ,body
+        -- end of section
+
+Now we can call it like so:
+
+    ,make-section -title=<<This is my title>> \
+      -body=<(
+        p <<This is a paragraph.>>
+        p <<And another.>>
+        p <<And so on.>>
+      )>
+
+(Note the use of the backslash in between parameters to continue the
+parameter list to the next line.  This useful trick also works to
+continue attribute lists when you are creating elements.)
+
+Because the <( )> delimiters can be used only to pass arguments, you
+can use them to "quote" arguments that otherwise could not be passed
+via position, e.g., a fragment of text that contains whitespace:
+
+    ,make-section <( <<This is my title>> )> \
+      <(
+        p <<This is a paragraph.>>
+        p <<And another.>>
+        p <<And so on.>>
+      )>
+
+You can even use the <( )> delimiters to pass the results of macro
+calls to elements and other macros:
+
+    ,h1 x =
+      -- level one heading
+      h1
+        ,x
+
+    ,bang x =
+      ,x
+      <<!>>
+
+    ,h1 <( <<Hello, >>
+           ,bang World )>
+
+The above produces the following XML:
+
+    <!-- level one heading -->
+    <h1>Hello, World!</h1>
+
+
+*** More advanced macros and functional programming
+
+Like functions in functional programming languages, macros in PXSL are
+first-class values that can be created, bound to parameters, and
+passed to other macros.  While this might initially seem like a
+programming-language curiosity, it is actually a simple yet immensely
+powerful tool that you can use to reduce the size and complexity of
+your XML documents.  In particular, this tool lets you "factor out"
+and reuse common, boilerplate portions of your documents.
+
+To see how this works, consider the following XML document that
+represents an address book:
+
+    <address-book>
+      <person>
+        <first>Joe</first>
+        <last>Smith</last>
+        <preferred>Joe Smith</preferred>
+      </person>
+      <person>
+        <first>John</first>
+        <last>Doe</last>
+        <preferred>John Doe</preferred>
+      </person>
+      <!-- ... more persons ... -->
+    </address-book>
+
+The address book contains a long list of persons, each of which has a
+first and last name and a "preferred name" that is usually the first
+and last named joined together (but might be something else). 
+
+We might write the address book in PXSL like this:
+
+    address-book
+      person
+        first <<Joe>>
+        last <<Smith>>
+        preferred <<Joe Smith>>
+      person
+        first <<John>
+        last <<Doe>>
+        preferred <<John Doe>>
+      -- ... more persons ...
+
+But, seeing how repetitive that is, we might create a ,person macro
+to make our lives easier:
+
+    ,person first last =
+      person
+        first
+          ,first
+        last
+          ,last
+        preferred
+          ,first 
+          << >>
+          ,last
+
+Now, with our new macro, we can simply write
+
+    address-book
+      ,person Joe Smith
+      ,person John Doe
+      -- ... more persons ...
+
+And, indeed, running the above PXSL code through pxslcc, yields the
+identical XML:
+
+    <address-book>
+      <person>
+        <first>Joe</first>
+        <last>Smith</last>
+        <preferred>Joe Smith</preferred>
+      </person>
+      <person>
+        <first>John</first>
+        <last>Doe</last>
+        <preferred>John Doe</preferred>
+      </person>
+      <!-- ... more persons ... -->
+    </address-book>
+
+Already, we have saved a great deal of work, but let's say that the
+situation is a little more complicated.  Let's say that in addition
+to the address-book, we also need to make a roster of persons:
+
+    <roster>
+      <formal>Smith, Joe</formal>
+      <formal>Doe, John</formal>
+      <!-- ... more persons ... -->
+    </roster>
+
+and, most important, we need to keep the address-book and roster
+synchronized.  In other words, we have one list of names and we
+must use it in two places.
+
+At this point, we might be tempted to put the list of names in a
+separate XML document and write a small external program or a couple
+of XSLT stylesheets to transform the document into the address-book
+and roster.  After all, we don't want to have to keep the address-book
+and roster synchronized by hand.
+
+But we can do this without leaving PXSL.  All we have to do is create
+a macro that builds things out of our list of people:
+
+    ,build-from-people builder-macro =
+        ,builder-macro Joe Smith
+        ,builder-macro John Doe
+        -- ... more persons ...
+
+The interesting thing is that our ,build-from-people macro takes
+another macro as a parameter and binds it to the name "builder-macro",
+just like it would any other kind of parameter.  It uses this macro to
+transform a first and last name into something else.  What that
+something else is, is up to us: We simply tailor the ,builder-macro to
+suit our purpose.
+
+For example, to build an address book:
+
+    address-book
+      ,build-from-people <( , first last =
+                              ,person <(,first)> <(,last)> )>
+
+or, to build a roster:
+
+    roster
+      ,build-from-people <( , first last =
+                              formal
+                                ,last
+                                <<, >>
+                                ,first  )>
+
+That's it.  We have just built an address book and a roster from our
+list of people.
+
+Now, you may have noticed something new in the above two snippets of
+PXSL.  In each snippet, inside of the outer-most <( )> delimiters, we
+created a macro on the fly -- an anonymous macro, so called because we
+didn't give it a name.  (It doesn't need a name because we're using it
+just this one time; nobody else will ever call it.)  We simply created
+it right when we needed it and passed it to the ,build-from-people
+macro, where it was bound to the name "builder-macro." Then
+,build-from-people used it to construct "person" or "formal" elements
+(depending on how we defined the anonymous macro).  It's a pretty neat
+trick.
+
+You can create anonymous macros using the familiar comma syntax --
+just don't provide a name.  Note the space between the comma and the
+start of the argument list:
+
+    , arg1 arg2... =
+      body
+
+To call an anonymous macro, of course, you'll first have to bind it to
+a name.  The way you do this is to pass the anonymous macro to another
+macro, just like we did earlier, causing the anonymous macro to be
+bound to one of the other macro's parameters:
+
+    ,some-other-macro <( , arg1 arg2... =
+                           body  )>
+
+Then that other macro can call it via the parameter's name:
+
+    ,some-other-macro marco-arg =
+      ,macro-arg -arg1=... -arg2=...
+
+Here's another example, less practical but illustrative.  See if you
+can figure out how the code works before reading the explanation
+that follows.
+
+    ,double str =
+       <{"}>
+       ,str
+       <{"}>
+    ,single str =
+       <{'}>
+       ,str
+       <{'}>
+    ,add-quotes quote-fn str =
+       ,quote-fn <( ,str )>
+
+    -- let's quote a couple of strings
+
+    ,add-quotes <( , x = ,double <(,x)> )> -str=<<Quote Me>>
+    << >>
+    ,add-quotes <( , x = ,single <(,x)> )> Please!
+
+Pxslcc compiles the above into the following output:
+
+    <!-- let's quote a couple of strings -->
+
+    "Quote Me" 'Please!'
+
+In this example, the two calls to the ,add-quotes macro each pass in
+an anonymous macro that performs the desired quoting operation.  The
+anonymous macro is bound to "quote-fn" when the ,add-quotes macro is
+called and expanded.  Thus, when ,add-quotes calls ,quote-fn, it is
+really calling the anonymous macro that we passed to it.  This lets us
+customize the behavior of ,add-quotes without having to rewrite it.
+
+*** Real-world example
+
+The examples above are contrived and don't do justice to the
+usefulness of this tool.  This type of refactoring shines when dealing
+with large, complicated, and repetitive data structures, but such
+examples are too unwieldy to include in an introduction like this.
+For this reason, I urge you to take a look at the
+"xsl-menus-w-macros.pxsl" example, in examples directory.  It shows
+one way that you can use anonymous macros to factor out common code in
+production XSLT stylesheets.
+
+    http://community.moertel.com/pxsl/examples/xsl-menus-w-macros.pxsl
+
+** Automatic PXSL-to-XML conversion via Make
+
+Most Make utilities allow you to define pattern rules that are then
+used automatically to convert one class of documents into another.
+Pattern rules can be used to automate the conversion of PXSL documents
+into their XML counterparts.  For example, if you place the following
+rule into a makefile (this is for GNU make),
+
+    %.xml: %.pxsl
+            pxlscc --indent=2 --header $< > $@
+
+Make will automatically generate .xml documents from the
+corresponding .pxsl documents whenever they are needed.  This
+frees you to substitute .pxsl documents anywhere that your
+project calls for .xml documents, knowing that make will keep all
+of the .xml documents up to date, regenerating them as needed
+when you update your .pxsl documents.
+
+
+* Reference:  pxlscc
+
+  Usage: pxslcc [OPTION...] [file]
+  -i[NUM]  --indent[=NUM]  Re-indent XML using NUM spaces per nesting level
+  -h       --header        Insert edit-the-PXSL-instead header into output XML
+  -x       --xslt          Add XSLT defaults
+  -a FILE  --add=FILE      Add the given defaults file
+           --export        Export (print) all of the active defaults
+           --dump          Dump internal parse format (for debugging)
+
+The --header option requires some explanation.  It inserts the following
+header comment into the output XML:
+
+    <!--
+
+    NOTICE:  This XML document was generated from PXSL source.
+             If you want to edit this file, you should probably
+             edit the original PXSL source file instead.
+
+    -->
+
+It's a good idea to use the --header option all of the time.  This
+prevents you (or somebody else) from accidentally editing an XML file
+when you really ought to be editing the PXSL file from which the
+XML file is generated.
+
+
+[TODO: Expand this section]
+
+
+* Reference:  PXSL syntax
+
+The PXSL grammar, in EBNF-like notation:
+
+    pxsl-document       ::= statement*, EOF
+
+    statement           ::= pxsl-comment
+                          | xml-comment
+                          | literal-constructor
+                          | element-constructor
+                          | macro-def
+                          | macro-app
+
+    pxsl-comment        ::= '#',  all-text-until-newline, NEWLINE
+    xml-comment         ::= "--", all-text-until-newline, NEWLINE
+    literal-constructor ::= mixed-literal | cdata-literal
+    element-constructor ::= xml-name, posn-args, nv-args, children
+    macro-def           ::= ',', xml-name?, param-names, '=', macro-body
+    macro-app           ::= ',', xml-name, posn-args, nv-args, children
+
+    xml-name            ::= ( LETTER | '_' | ':' ), 
+                            ( LETTER | DIGIT | '_' | ':' | '.' | '-' )*
+    posn-args           ::= expr-list
+    nv-args             ::= ( line-continuation?, name-value-pair )*
+    name-value-pair     ::= '-', xml-name, '=', expr
+    children            ::= statement*     /* must be indented */
+    macro-body          ::= children
+    param-names         ::= ( line-continuation?, xml-name )*
+
+    line-continuation   ::= '\', newline
+
+    expr-list           ::= ( line-continuation?, arg-expr )*
+    arg-expr            ::= expr    /* cannot start with '-' */
+    expr                ::= expr-single | NON-WHITESPACE+
+    expr-single         ::= mixed-literal | cdata-literal | pxsl-fragment
+    mixed-literal       ::= "<<", all-text-until->>-delimiter, ">>"
+    cdata-literal       ::= "<{", all-text-until-}>-delimiter, "}>"
+    pxsl-fragment       ::= "<(", statement*, ")>"
+
+
+* Authors
+
+Tom Moertel <tom@moertel.com> http://www.moertel.com/
+
+Bill Hubauer <bill@hubauer.com>
+
+* (For Emacs)
+
+  Local Variables:
+  mode:outline
+  End:
+

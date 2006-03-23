@@ -1,0 +1,89 @@
+$Id: TODO,v 1.5 2004/02/23 08:19:27 thor Exp $
+
+ERRORS TO FIX
+
+* If --header flag is active and the output XML contains a multi-line
+  introductory <?xml?> processing instruction, the header is inserted
+  in the middle.  Oops.
+
+* Vertical whitespace rules could be clearer (see Rewrite output stage todo)
+
+TODO
+
+* Rewrite output stage from
+      Parse Tree -> String
+  to
+      Parse Tree -> Output stream -> String
+  in order to make white space optimization cleaner and better.
+ 
+  Rules:
+
+  All blank lines after the last non-blank line of a macro
+  definition are ignored.
+
+  Otherwise, blank lines in content are preserved, as is.
+
+  What about initial blank lines inside of a macro-definition body?
+
+
+
+
+WISH LIST
+
+
+
+
+----------------------------------------------------------------------------
+COMPLETED ITEMS
+----------------------------------------------------------------------------
+
+X Create RPM spec file for pxsl-tools.
+
+X Add # as a PXSL comment that is stripped out upon processing
+
+X Add switch that inserts a "translated-from-PXSL comment" to output XML
+
+X Add new bracketing delimiters:
+  X  <( )> -- contents are evaluated and inserted into the parse tree
+              mainly for use in macro expansion in attribute values
+  X  <{ }> -- exactly like << >> except that contents are treated as
+              CDATA (i.e., < becomes &lt; in emitted XML)
+
+X If (ddd)x is used a positional parameter, only x shows in value.
+
+X If you leave off the -name=value (name=value), name=value gets
+  parsed as an element.
+
+X What if a line is continued between positional and named args?
+
+X When <<text>> is expanded as an attribute value, < and & should be
+  escaped.  Rationale: There is no such thing as mixed-mode content in
+  attribute values -- it's CDATA w/ char-entity refs.  So escaping
+  is the right thing to do.
+
+  Resolution:  No it isn't.  If somebody used to programming in XML
+  writes "xsl:test -when=$i&lt;5", he expects that the & won't be
+  escaped.  So we need different behavior between << >> and <{ }>,
+  even in attribute values.
+
+X Add macro expansion capability.
+
+X Switch to lexical scoping, instead of dynamic, for macro expansion.
+  I.e., macros ought to carry around closures.
+
+X Fix this:
+
+    ,make-section title =
+      section
+        -- start of section
+        title
+          ,title
+        ,BODY
+        -- end of section
+
+    ,make-section -title=<<Section containing another>>
+      ,make-section -title=<<This is my title>>
+        p <<This is a paragraph.>>
+        p <<And another.>>
+        p <<And so on.>>
+

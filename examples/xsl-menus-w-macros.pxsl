@@ -1,0 +1,161 @@
+# Advanced example:  Using macros to refactor "one-off" code.
+#
+# NOTE:  A more in-depth write up of this refactoring can be
+#        found at the following link:
+#
+#        http://www.kuro5hin.org/story/2003/6/4/12434/75716
+#
+# Problem:
+#
+# We have numerous pieces of XSLT code that are "one-offs": Each
+# one is the same as the others except for a small tweak here or
+# there.  Every time there is a change to the code that the one-offs
+# share, we must modify each of the one-offs, a time consuming and
+# error-prone chore.
+#
+# Goal:
+#
+# We would like to refactor the code so that the common portions of
+# code are represented once.
+#
+# Solution:
+#
+# (1) Create a macro that captures the common code.
+# (2) Parameterize the macro to accept the varying portions.
+# (3) Expand the macro to generate one-offs as needed.
+#
+# Background on the example:
+#
+# In this example (taken from my real-life work) we have what
+# essentially is a data structure that represents menus in a web
+# site:
+#
+#     <menu>
+#       <menu-item loc="/home/">Home</menu-item>
+#       <menu-item loc="/about/">About this site</menu-item>
+#       <menu-item loc="/contact/">Contact us</menu-item>
+#     </menu>
+#
+# Then we have a function that iterates through the menu-item elements
+# of a menu, generating an HTML representation of the menu as it goes.
+# Each item is converted into a link to the page it represents.
+# Additionally, there is the notion of a "visited item" -- the
+# menu-item that represents the active page of the web site.  This
+# item typically requires a special presentation, e.g., that says "you
+# are here": it may be rendered in boldface and not converted into a
+# link (because the user is already on that page).
+#
+# For example, if we want a horizontal rendering of the menu, we
+# might convert it into the following:
+#
+#     <span class="hmenu">
+#       <span class="hmenu-item">
+#         <a href="/home/">Home</a>
+#       </span> |
+#       <span class="hmenu-item">
+#         <a href="/about/">About this site</a>
+#       </span> |
+#       <span class="hmenu-item-selected">
+#         Contact us
+#       </span>
+#     </span>
+#
+# which might render like this in a browser:
+#
+#     Home | About this site | CONTACT US
+#
+# Or, if a vertical rendering is more appropriate, we might choose the
+# following HTML, which uses DIV elements instead of SPAN elements:
+#
+#      <div class="vmenu">
+#        <div class="vmenu-item">
+#          <a href="/home/">Home</a>
+#        </div>
+#        <div class="vmenu-item">
+#          <a href="/about/">About this site</a>
+#        </div>
+#        <div class="vmenu-item-selected">
+#          Contact us
+#        </div>
+#      </div>
+#
+# which might render like this in a browser:
+#
+#     Home
+#     About
+#     CONTACT US
+#
+# Now, how do we do it?
+#
+# Following the above Solution recipe, we create a macro called
+# "make-menu-builder" that captures the common behavior.  It takes
+# the following parameters:
+#
+#   - menu-maker: A macro that takes a BODY parameter and expands to
+#       an HTML representation of a menu that contains the BODY.
+#
+#   - item-maker: A macro that takes a BODY parameter and expands to
+#       an HTML representation of a menu item that contains the BODY.
+#
+#   - item-maker-sel: Same as item-maker, except this item should
+#       be rendered in a "selected" state because this is the active
+#       menu item.
+#
+#   - item-separator:  A macro that expands into the HTML that is
+#       to be placed in between consecutive menu items.
+#
+# We expand the macro twice, passing in different parameters,
+# to create one-offs for rendering menus horizontally and vertically.
+#
+# The actual PXSL code follows.  It relies upon anonymous macros,
+# which are explained in the README file.  It also uses a handy
+# syntax shortcut to create nested elements on a single line:
+#
+#     elem          ==SHORTCUT==>      elem <<>> child
+#       child
+
+
+# Here is a macro which will make "menu-builders" (XSLT
+# templates that build HTML menus).  It is parameterized
+# as described above.
+
+,make-menu-builder name \
+  menu-maker item-maker item-maker-sel item-separator =
+
+  func:function -name=<(,name)>
+    xsl:param -name=menu
+    xsl:param -name=target-absloc
+    func:result
+      ,menu-maker
+        xsl:for-each -select=$menu/menu-item
+          xsl:variable -name=menu-absloc -select=mcf:absloc()
+          xsl:variable -name=visited-item-id \
+            -select=mcf:find-item($menu,$target-absloc)
+          xsl:variable -name=title -select=<{translate(.,' ','&#160;')}>
+          xsl:choose
+            xsl:when -test=generate-id()=$visited-item-id
+              ,item-maker-sel
+                xsl:value-of -select=$title
+            xsl:otherwise
+              ,item-maker
+                a -href={mcf:menu-link($menu-absloc)}
+                  xsl:value-of -select=$title
+          xsl:if -test=<{last() > position()}>
+            ,item-separator
+
+# Now comes the code that expands the above macros to
+# create horizontal-menu and vertical-menu builders.
+
+-- build horizontal menus
+,make-menu-builder mcf:horizontal-menu \
+  -menu-maker=<( , = span -class=hmenu <<>> ,BODY )> \
+  -item-maker=<( , = span -class=hmenu-item <<>> ,BODY )> \
+  -item-maker-sel=<( , = span -class=hmenu-item-selected <<>> ,BODY )> \
+  -item-separator=<( span -class=hmenu-sep << | >>  )>
+
+-- build vertical menus
+,make-menu-builder mcf:vertical-menu \
+  -menu-maker=<( , = div -class=vmenu <<>> ,BODY )> \
+  -item-maker=<( , = div -class=vmenu-item <<>> ,BODY )> \
+  -item-maker-sel=<( , = div -class=vmenu-item-selected <<>> ,BODY )> \
+  -item-separator=<<>>
