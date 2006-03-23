@@ -6,7 +6,7 @@
                                    
                  PARSIMONIOUS XML SHORTHAND LANGUAGE
 
-           $Id: README,v 1.17 2005/02/10 21:37:50 thor Exp $
+           $Id: README,v 1.18 2006/03/23 05:21:42 thor Exp $
 
 
 PXSL ("pixel") is a convenient shorthand for writing markup-heavy XML
@@ -341,6 +341,9 @@ You can then use the returned document in your XML-aware programs.
 If you know how to use Make or Ant or similar tools, you can easily
 automate this process so that your PXSL files are automagically
 converted into XML when needed.
+
+NOTE:  The pxslcc program expects UTF-8 encoded input and emits UTF-8
+encoded output.
 
 
 * Advanced topics
