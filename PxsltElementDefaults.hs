@@ -18,15 +18,15 @@ module PxsltElementDefaults
 where
 
 import PxsltParserTerms
-import Data.FiniteMap
+import qualified Data.Map as Map
 import Data.List (isPrefixOf, intersperse)
 import Data.Char (isSpace)
 
-type ElementDefaultDatabase = FiniteMap String (String, [String])
+type ElementDefaultDatabase = Map.Map String (String, [String])
 
 applyDefaults :: ElementDefaultDatabase -> Statement -> Statement
 applyDefaults database e@(Element _ nm pattrs nvattrs chldn) =
-    case lookupFM database nm of
+    case Map.lookup nm database of
         Nothing -> e { children = chldn' }
         Just (name', pnames) ->
             e { name       = name'
@@ -38,7 +38,7 @@ applyDefaults database e@(Element _ nm pattrs nvattrs chldn) =
 applyDefaults _ e = e
 
 readDefaults :: String -> ElementDefaultDatabase
-readDefaults = listToFM . concatMap parseLine . stripComments . lines
+readDefaults = Map.fromList . concatMap parseLine . stripComments . lines
     where
     stripComments = filter (any (not.isSpace)) . filter (not . isPrefixOf "#")
     parseLine l = map (\nm -> (nm, (canonName, pAttrs))) (words shortNames)
@@ -47,7 +47,7 @@ readDefaults = listToFM . concatMap parseLine . stripComments . lines
         (canonName:pAttrs)  = words (tail defnStr)
 
 showDefaults :: ElementDefaultDatabase -> String
-showDefaults = unlines . map showEntry . fmToList
+showDefaults = unlines . map showEntry . Map.toList
     where
     showEntry (shortName, (canonName, pAttrs)) =
         pad 20 shortName ++ " = " ++ canonName ++ " " ++ join pAttrs
@@ -56,13 +56,13 @@ showDefaults = unlines . map showEntry . fmToList
 
 mergeDefaults :: ElementDefaultDatabase -> ElementDefaultDatabase
                                         -> ElementDefaultDatabase
-mergeDefaults = plusFM
+mergeDefaults = Map.union
 
 emptyDefaults :: ElementDefaultDatabase
-emptyDefaults = emptyFM
+emptyDefaults = Map.empty
 
 xsltDefaults :: ElementDefaultDatabase
-xsltDefaults = listToFM . concatMap copyForNS $
+xsltDefaults = Map.fromList . concatMap copyForNS $
     [ ("stylesheet"      , ("xsl:stylesheet"      , []))
     , ("transform"       , ("xsl:transform"       , []))
     , ("import"          , ("xsl:import"          , nHref))
