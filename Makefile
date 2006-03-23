@@ -3,13 +3,13 @@
 #
 # CVS: $Id: Makefile,v 1.11 2005/01/27 14:43:52 thor Exp $ 
 #
-# Copyright (C) 2003-5 Tom Moertel <tom@moertel.com>
+# Copyright (C) 2003-6 Tom Moertel <tom@moertel.com>
 # Licensed under the terms of the GNU General Public License.
 # See the LICENSE file in the project distribution for details.
 #-----------------------------------------------------------------------------
 
 PROJECT          = pxsl
-VERSION     	 = 0.9.3
+VERSION     	 = 0.9.4
 
 TARGETS     	 = pxslcc
 
