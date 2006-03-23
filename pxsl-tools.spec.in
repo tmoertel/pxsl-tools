@@ -1,6 +1,6 @@
 Summary: Tools for using PXSL, the Parsimonious XML Shorthand Language
 Name: pxsl-tools
-Version: 0.9.3
+Version: @@VERSION@@
 Release: 1
 License: GPL
 Group: Development/Tools
