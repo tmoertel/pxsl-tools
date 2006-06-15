@@ -7,7 +7,7 @@ Group: Development/Tools
 URL: http://community.moertel.com/pxsl/
 Source0: http://community.moertel.com/pxsl/pxsl-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-BuildRequires: ghc >= 5.04.3, perl
+BuildRequires: ghc >= 6.4, perl
 
 
 %description
@@ -38,7 +38,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Mar 23 2006  <thor@arinmir.lab01.moertel.com> - 0.9.4-1
+- Updated for 0.9.4
+
 * Thu Jun  5 2003 Tom Moertel <tom@moertel.com>
 - Initial build.
-
-

@@ -1,0 +1,22 @@
+2006-06-15  Tom Moertel  <thor@arinmir.lab01.moertel.com>
+
+	* RELEASE 0.9.5 -- Added UTF-8 support
+
+2005-07-16  Tom Moertel  <thor@localhost.localdomain>
+
+        * RELEASE 0.9.4 -- Updated for GHC 6.4
+
+	* PxsltElementDefaults.hs: removed Show instance for
+	  FiniteMap, since it is now in the GHC-supplied libraries
+
+2005-01-27  Tom Moertel  <thor@localhost.localdomain>
+
+	* RELEASE 0.9.3 -- Updated for GHC 6.2.2
+
+2003-06-17  Tom  <thor@douglas-maple.lab04.moertel.com>
+
+        * RELEASE 0.9.1
+
+	* PxsltParser.hs (parenExpr): Fixed bug that caused the inner
+	parens in nested-paren expressions to be lost.
+

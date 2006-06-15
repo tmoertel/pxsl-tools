@@ -6,7 +6,7 @@
                                    
                  PARSIMONIOUS XML SHORTHAND LANGUAGE
 
-           $Id: README,v 1.18 2006/03/23 05:21:42 thor Exp $
+                         Updated 2006-06-15
 
 
 PXSL ("pixel") is a convenient shorthand for writing markup-heavy XML
@@ -110,7 +110,7 @@ In order to build the tools you will need the following:
   - A PXSL source tarball (typically named "pxsl-{version}.tar.gz")
     http://community.moertel.com/pxsl/
 
-  - GHC Haskell compiler, version 5.04.3 or greater
+  - GHC Haskell compiler, version 6.4 or greater
     http://www.haskell.org/ghc/
 
   - Make (GNU's flavor preferred)
@@ -127,6 +127,16 @@ tarball and build the project via the "make" command:
 (Replace {version} with the version of PXSL that you downloaded.)
 
 That's it.  You should now have a fully functional version of pxslcc.
+
+** RPMs
+
+If you are on a Red Hat or Fedora Core Linux system (or a similar
+RPM-based distribution), you can build RPMs from the tarball with a
+single command:
+
+    $ rpmbuild -ta pxsl-{version}.tar.gz
+
+(Note that you will still need GHC and GNU make.)
 
 
 * Gentle Introduction to PXSL
