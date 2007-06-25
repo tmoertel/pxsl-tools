@@ -184,7 +184,7 @@ is markup.  As you can see above, XML's document-centric style of
 markup, in which the markup is delimited from the flow of surrounding
 text, becomes a hindrance when markup is in the majority.
 
-PXSL, by contrast, was designed specifically to handle this case well.
+PXSL, in contrast, was designed specifically to handle this case well.
 It makes dense markup easy because it assumes that everything is
 markup to begin with.  You need only delimit the few portions of text
 that are mixed into the flow of surrounding markup.
