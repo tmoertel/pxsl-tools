@@ -3,7 +3,7 @@
 #
 # CVS: $Id: Makefile,v 1.11 2005/01/27 14:43:52 thor Exp $ 
 #
-# Copyright (C) 2003-6 Tom Moertel <tom@moertel.com>
+# Copyright (C) 2003-07 Tom Moertel <tom@moertel.com>
 # Licensed under the terms of the GNU General Public License.
 # See the LICENSE file in the project distribution for details.
 #-----------------------------------------------------------------------------
@@ -30,14 +30,14 @@ TESTS_OUT_XSL2  := $(TESTS_IN:.xsl=.xsl2)
 TESTS_OUT_DIFF  := $(TESTS_IN:.xsl=.diff)
 TESTS_OUT_PXSL2 := $(TESTS_IN:.xsl=.pxsl2)
 
-HASKELL     	:= $(wildcard *.hs)
+HASKELL     	:= $(wildcard src/*.hs)
 LIB_HASKELL     := 
 ALL_HASKELL     := $(sort $(HASKELL) $(LIB_HASKELL))
 
-GHC_PACKAGE 	 = -package lang
+GHC_PACKAGE 	 = 
 GHC_OPT     	 =
 # GHC_WARN         = -Wall -fno-warn-name-shadowing
-GHC_OPTS         = 
+GHC_OPTS         = -isrc
 
 GHC         	:= $(strip ghc $(GHC_WARN) $(GHC_OPT) $(GHC_OPTS) \
                      $(GHC_PACKAGE))
@@ -121,8 +121,8 @@ README-online.html : README.html
 
 # build rules for Haskell
 
-% : %.hs $(ALL_HASKELL) Makefile
-	sed -e 's/@VERSION@/$(VERSION)/' -e 's/@YEAR@/$(YEAR2)/' $< > $@.x.hs
+pxslcc : $(ALL_HASKELL) Makefile
+	sed -e 's/@VERSION@/$(VERSION)/' -e 's/@YEAR@/$(YEAR2)/' src/$@.hs > $@.x.hs
 	$(GHC) -o $@ --make $@.x.hs
 	rm -f $@.x.hs
 	$(STRIP) $@ || echo "(Binary not stripped.  No big deal.)"
@@ -142,7 +142,7 @@ README.html : README text-to-html.pl
 
 .PHONY : clean
 clean :
-	rm -f *.o *.hi *.bak $(GENERATED)
+	rm -f src/*.o src/*.hi src/*.bak $(GENERATED)
 	rm -rf $(DOCDIR)
 
 .PHONY : cleandeps
