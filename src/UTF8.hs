@@ -12,9 +12,9 @@ has licensed under the GPL.
 
 module UTF8(toUTF, fromUTF) where
 
-import Bits
-import Char
-import Word(Word8)
+import Data.Bits
+import Data.Char
+import Data.Word(Word8)
 
 
 

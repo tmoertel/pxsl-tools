@@ -14,7 +14,7 @@ where
 
 import Data.List
 import Control.Monad.Reader
-import Maybe (mapMaybe)
+import Data.Maybe (mapMaybe)
 
 import PxsltParserTerms
 import XmlString

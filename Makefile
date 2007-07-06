@@ -142,7 +142,7 @@ README.html : README text-to-html.pl
 
 .PHONY : clean
 clean :
-	rm -f src/*.o src/*.hi src/*.bak $(GENERATED)
+	rm -f *.o *.hi src/*.o src/*.hi src/*.bak $(GENERATED)
 	rm -rf $(DOCDIR)
 
 .PHONY : cleandeps
