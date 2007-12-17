@@ -1,12 +1,38 @@
-Name:                pxslcc
+Name:                pxsl-tools
 Homepage:            http://community.moertel.com/ss/space/PXSL
 Version:             1.0
-Description:         Parsimonious XML Shorthand Language--to-XML compiler
+Stability:           stable
 License:             GPL
 License-file:        LICENSE
-Author:              Tom Moertel
-Maintainer:          tom@moertel.com
-Build-Depends:       base, mtl >= 1.0, parsec >= 2.0
+Author:              Tom Moertel <tom@moertel.com>
+Maintainer:          Tom Moertel <tom@moertel.com>
+Copyright:           2003-2007 Thomas G. Moertel <tom@moertel.com>
+Category:            XML
+Build-type:          Simple
+Build-Depends:       base, mtl >= 1.0, parsec >= 2.0, containers
+Synopsis:            Parsimonious XML Shorthand Language--to-XML compiler
+Description:
+  The package contains a compiler that converts Parsimonious XML
+  Shorthand Language (PXSL) into XML.  PXSL ("pixel") is a convenient
+  shorthand for writing markup-heavy XML documents.  It provides XML
+  authors and programmers with a simple, concise syntax that they can
+  use to create XML documents. For more advanced users, PXSL offers
+  customizable shortcuts and sophisticated refactoring tools like
+  functional macros that can markedly reduce the size and complexity
+  of markup-dense XML documents.
+Cabal-version: >= 1.2
+extra-source-files:  Makefile
+    README
+    README.html
+    src/GetInput.hs
+    src/PxsltElementDefaults.hs
+    src/PxsltFormat.hs
+    src/PxsltMacros.hs
+    src/PxsltParser.hs
+    src/PxsltParserTerms.hs
+    src/PxsltParserTreeTransforms.hs
+    src/UTF8.hs
+    src/XmlString.hs
 
 Executable:          pxslcc
 Main-is:             pxslcc.hs

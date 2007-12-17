@@ -1,12 +1,12 @@
- 
+
                         ____  _  _  ___  __
                        (  _ \( \/ )/ __)(  )
                         )___/ )  ( \__ \ )(__
                        (__)  (_/\_)(___/(____)
-                                   
+
                  PARSIMONIOUS XML SHORTHAND LANGUAGE
 
-                         Updated 2006-06-15
+                         Updated 2007-12-15
 
 
 PXSL ("pixel") is a convenient shorthand for writing markup-heavy XML
@@ -107,22 +107,22 @@ for your platform.
 
 In order to build the tools you will need the following:
 
-  - A PXSL source tarball (typically named "pxsl-{version}.tar.gz")
-    http://community.moertel.com/pxsl/
+  - A PXSL source tarball (typically named "pxsl-tools-{version}.tar.gz")
+    http://community.moertel.com/pxsl/sources/
 
-  - GHC Haskell compiler, version 6.4 or greater
-    http://www.haskell.org/ghc/
+  - A Haskell compiler supporting the Cabal build system.
+    I use GHC:  http://www.haskell.org/ghc/
 
-  - Make (GNU's flavor preferred)
-    Windows users: install Cygwin, which includes GNU make:
-    http://www.cygwin.com/
+Just uncompress the tarball and build the project using the following
+commands.  If you want to install a personal copy of pxslcc instead of
+the doing the default, system-wide installation, uncomment the extra
+command-line flags on the third command.
 
-Once GHC and Make are installed on your computer, uncompress the
-tarball and build the project via the "make" command:
-
-    $ tar zxvf pxsl-{version}.tar.gz
-    $ cd pxsl-{version}
-    $ make
+    $ tar zxvf pxsl-tools-{version}.tar.gz
+    $ cd pxsl-tools-{version}
+    $ runhaskell Setup.lhs configure # --user --prefix=$HOME
+    $ runhaskell Setup.lhs build
+    $ runhaskell Setup.lhs install
 
 (Replace {version} with the version of PXSL that you downloaded.)
 
@@ -131,12 +131,10 @@ That's it.  You should now have a fully functional version of pxslcc.
 ** RPMs
 
 If you are on a Red Hat or Fedora Core Linux system (or a similar
-RPM-based distribution), you can build RPMs from the tarball with a
-single command:
+RPM-based distribution), you can build RPMs using the cabal-rpm
+tool:
 
-    $ rpmbuild -ta pxsl-{version}.tar.gz
-
-(Note that you will still need GHC and GNU make.)
+    http://hackage.haskell.org/cgi-bin/hackage-scripts/package/cabal-rpm-0.3.2
 
 
 * Gentle Introduction to PXSL
@@ -212,7 +210,7 @@ example from above:
             <cn> 2 </cn>                    ci << x >>
           </apply>                          cn << 2 >>
           <ci> x </ci>                    ci << x >>
-          <cn> 3 </cn>                    cn << 3 >>  
+          <cn> 3 </cn>                    cn << 3 >>
         </apply>
       </lambda>
     </declare>
@@ -290,7 +288,7 @@ hierarchy.  If you place sections of quoted text next to one another
       </title>                        body -id=db13
       <body id="db13">                  <<This is multi-
         This is multi-                  line text.>>
-        line text.                    
+        line text.
       </body>
     </doc>
 
@@ -304,7 +302,7 @@ The comment extends to the end of the line.
       </title>                        body -id=db13
       <body id="db13">                  <<This is multi-
         This is multi-                  line text.>>
-        line text.                    
+        line text.
       </body>
     </doc>
 
@@ -845,7 +843,7 @@ represents an address book:
 
 The address book contains a long list of persons, each of which has a
 first and last name and a "preferred name" that is usually the first
-and last named joined together (but might be something else). 
+and last named joined together (but might be something else).
 
 We might write the address book in PXSL like this:
 
@@ -870,7 +868,7 @@ to make our lives easier:
         last
           ,last
         preferred
-          ,first 
+          ,first
           << >>
           ,last
 
@@ -1098,7 +1096,7 @@ The PXSL grammar, in EBNF-like notation:
     macro-def           ::= ',', xml-name?, param-names, '=', macro-body
     macro-app           ::= ',', xml-name, posn-args, nv-args, children
 
-    xml-name            ::= ( LETTER | '_' | ':' ), 
+    xml-name            ::= ( LETTER | '_' | ':' ),
                             ( LETTER | DIGIT | '_' | ':' | '.' | '-' )*
     posn-args           ::= expr-list
     nv-args             ::= ( line-continuation?, name-value-pair )*
@@ -1120,7 +1118,7 @@ The PXSL grammar, in EBNF-like notation:
 
 * Authors
 
-Tom Moertel <tom@moertel.com> http://www.moertel.com/
+Tom Moertel <tom@moertel.com> http://blog.moertel.com/
 
 Bill Hubauer <bill@hubauer.com>
 

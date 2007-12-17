@@ -9,9 +9,9 @@
 #-----------------------------------------------------------------------------
 
 PROJECT          = pxsl
-VERSION     	 = 0.9.6
+VERSION     	 = 1.0
 
-TARGETS     	 = pxslcc
+TARGETS     	 = dist/build/pxslcc/pxslcc
 
 DOCDIR      	 = docs
 TESTDIR          = tests
@@ -24,25 +24,13 @@ TARBALL          = $(DISTDIR).tar.gz
 BINDISTDIR       = Linux-binaries/$(PROJECT)-$(VERSION)-$(shell uname -ms | tr 'A-Z ' 'a-z-')
 BINTARGETS      := README $(TARGETS) examples
 
+HASKELL         := $(wildcard src/*.hs src/*.hs.in)
+
 TESTS_IN        := $(wildcard $(TESTDIR)/*.xsl)
 TESTS_OUT_PXSL  := $(TESTS_IN:.xsl=.pxsl)
 TESTS_OUT_XSL2  := $(TESTS_IN:.xsl=.xsl2)
 TESTS_OUT_DIFF  := $(TESTS_IN:.xsl=.diff)
 TESTS_OUT_PXSL2 := $(TESTS_IN:.xsl=.pxsl2)
-
-HASKELL     	:= $(wildcard src/*.hs)
-LIB_HASKELL     := 
-ALL_HASKELL     := $(sort $(HASKELL) $(LIB_HASKELL))
-
-GHC_PACKAGE 	 = 
-GHC_OPT     	 =
-# GHC_WARN         = -Wall -fno-warn-name-shadowing
-GHC_OPTS         = -isrc
-
-GHC         	:= $(strip ghc $(GHC_WARN) $(GHC_OPT) $(GHC_OPTS) \
-                     $(GHC_PACKAGE))
-
-STRIP       	 = strip
 
 DIST_MANIFEST   := README README.html LICENSE Makefile xsl2pxsl.xsl \
                    text-to-html.pl $(HASKELL) examples TODO \
@@ -121,11 +109,11 @@ README-online.html : README.html
 
 # build rules for Haskell
 
-pxslcc : $(ALL_HASKELL) Makefile
-	sed -e 's/@VERSION@/$(VERSION)/' -e 's/@YEAR@/$(YEAR2)/' src/$@.hs > $@.x.hs
-	$(GHC) -o $@ --make $@.x.hs
-	rm -f $@.x.hs
-	$(STRIP) $@ || echo "(Binary not stripped.  No big deal.)"
+dist/build/pxslcc/pxslcc : $(HASKELL) Makefile
+	sed -e 's/@VERSION@/$(VERSION)/' -e 's/@YEAR@/$(YEAR2)/' src/pxslcc.hs.in > src/pxslcc.hs
+	runhaskell Setup.lhs configure
+	runhaskell Setup.lhs build
+
 
 # make README.html from README
 
