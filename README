@@ -6,7 +6,7 @@
 
                  PARSIMONIOUS XML SHORTHAND LANGUAGE
 
-                         Updated 2007-12-15
+                         Updated 2008-02-16
 
 
 PXSL ("pixel") is a convenient shorthand for writing markup-heavy XML
@@ -45,6 +45,7 @@ the complexity of your documents.
         Built-in element defaults for XSLT stylesheets
     - Advanced quoting with << >> and <{ }>
     - Macro facility
+    - Tip: store frequently used macros in reusable .pxsl files
     - Advanced macros and passing parameters with the <( )> delimiters
     - More advanced macros and functional programming
     - Automatic PXSL-to-XML conversion via Make
@@ -56,9 +57,13 @@ the complexity of your documents.
 
 * Getting PXSL
 
-The most-recent official version of PXSL can always be found here:
+The most-recent official version of the PXSL tools can always be found
+here:
 
     http://community.moertel.com/pxsl/
+
+The PXSL tools have been also packaged for Debian (thanks Kari Pahula)
+and Red Hat / Fedora.
 
 By the way, you pronounce PXSL like "pixel".
 
@@ -78,7 +83,7 @@ comments:
 
 * LICENSE
 
-Copyright (C) 2003--2005 Thomas Moertel & Bill Hubauer.
+Copyright (C) 2003--2008 Thomas Moertel & Bill Hubauer.
 
 The PXSL toolkit is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
@@ -101,6 +106,10 @@ are reserved worldwide.
 
 If you don't want to build the PXSL tools from source code, you can
 download one of the pre-built binary packages on the PXSL web site.
+The PXSL tools have been also packaged for Debian (thanks Kari Pahula)
+and Red Hat / Fedora.  You might want to search your local package
+repositories before building from source.
+
 If a binary package isn't available for your computing platform of
 choice, you can use the following procedure to build the PXSL tools
 for your platform.
@@ -130,9 +139,12 @@ That's it.  You should now have a fully functional version of pxslcc.
 
 ** RPMs
 
-If you are on a Red Hat or Fedora Core Linux system (or a similar
-RPM-based distribution), you can build RPMs using the cabal-rpm
-tool:
+If you are on a Red Hat or Fedora  Linux system (or a similar
+RPM-based distribution), you can probably find RPMS and SRPMS here:
+
+    http://community.moertel.com/pxsl/RPMS/
+
+Otherwise, you can build custom RPMs using the cabal-rpm tool:
 
     http://hackage.haskell.org/cgi-bin/hackage-scripts/package/cabal-rpm-0.3.2
 
@@ -462,7 +474,11 @@ lines of this form:
 
 It's a good idea to extend the file's name with a suffix of ".edf",
 which is short for "element defaults," but feel free to ignore this
-convention.
+convention.  (Note: element defaults are *not* PXSL macros.  If you
+want to create a file that contains commonly used macros, just save
+them in a regular .pxsl file and include it by mentioning it on the
+command line; the .edf suffix is for element defaults only.  See "Tip:
+store frequently used macros in separate .pxsl files" for more.)
 
 For example, we might create a "xhtml-shortcuts.edf" file to capture
 our shortcuts from above:
@@ -690,6 +706,18 @@ Although contrived in this small example, factoring out blocks of
 markup makes the structure of large documents easier to understand and
 manage because you are free to move them around, subdivide them
 further, and reuse them in many locations.
+
+*** Tip: store frequently used macros in reusable .pxsl files
+
+If you use certain macros frequently in your PXSL documents, you might
+benefit from placing the macros into a separate .pxsl file that you
+can reuse.  For example, you could place your macros into a file
+macros.pxsl and then use them when processing several documents:
+
+    $ pxslcc macros.pxsl doc1.pxsl > doc1.xml
+    $ pxslcc macros.pxsl doc2.pxsl > doc2.xml
+    $ pxslcc macros.pxsl doc3.pxsl > doc3.xml
+
 
 *** Parameterized macros
 
@@ -1048,13 +1076,23 @@ when you update your .pxsl documents.
 
 * Reference:  pxlscc
 
-  Usage: pxslcc [OPTION...] [file]
+  Usage: pxslcc [OPTION...] [file...]
   -i[NUM]  --indent[=NUM]  Re-indent XML using NUM spaces per nesting level
   -h       --header        Insert edit-the-PXSL-instead header into output XML
   -x       --xslt          Add XSLT defaults
   -a FILE  --add=FILE      Add the given defaults file
            --export        Export (print) all of the active defaults
            --dump          Dump internal parse format (for debugging)
+
+When you list more than one PXSL file on the command line, pxslcc will
+join the files, in order, into one big PXSL document and process that
+document.  You can use this feature to incorporate commonly used
+macros into your documents:
+
+    $ pxslcc macros1.pxsl macros2.pxsl doc.pxsl > doc.xml
+
+In the example above, doc.pxsl can use the macros defined in
+macros1.pxsl and macros2.pxsl.
 
 The --header option requires some explanation.  It inserts the following
 header comment into the output XML:
@@ -1127,4 +1165,3 @@ Bill Hubauer <bill@hubauer.com>
   Local Variables:
   mode:outline
   End:
-
