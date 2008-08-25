@@ -23,8 +23,6 @@ Description:
 
 Cabal-version: >= 1.2
 extra-source-files:  Makefile
-    README
-    README.html
     src/GetInput.hs
     src/PxsltElementDefaults.hs
     src/PxsltFormat.hs
@@ -34,6 +32,10 @@ extra-source-files:  Makefile
     src/PxsltParserTreeTransforms.hs
     src/UTF8.hs
     src/XmlString.hs
+
+data-files:
+    README
+    README.html
 
 Executable:          pxslcc
 Main-is:             pxslcc.hs
