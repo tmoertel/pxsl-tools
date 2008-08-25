@@ -22,7 +22,7 @@ Description:
   the size and complexity of markup-dense XML documents.
 
 Cabal-version: >= 1.2
-extra-source-files:  Makefile
+extra-source-files:
     src/GetInput.hs
     src/PxsltElementDefaults.hs
     src/PxsltFormat.hs
