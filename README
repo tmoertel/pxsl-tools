@@ -1,4 +1,3 @@
-
                         ____  _  _  ___  __
                        (  _ \( \/ )/ __)(  )
                         )___/ )  ( \__ \ )(__
@@ -6,15 +5,15 @@
 
                  PARSIMONIOUS XML SHORTHAND LANGUAGE
 
-                         Updated 2008-02-16
+                         Updated 2013-12-13
 
 
 PXSL ("pixel") is a convenient shorthand for writing markup-heavy XML
 documents.  The following document explains why PXSL is needed and
 shows you how to use it.  For additional information, such as the FAQ
-list, visit the community site:
+list, visit the project site:
 
-    http://community.moertel.com/ss/space/pxsl
+    https://github.com/tmoertel/pxsl-tools
 
 You'll get more out of this document if you read it from start to
 finish, but you can stop anywhere after the "Gentle Introduction to
@@ -60,25 +59,12 @@ the complexity of your documents.
 The most-recent official version of the PXSL tools can always be found
 here:
 
-    http://community.moertel.com/pxsl/
+    https://github.com/tmoertel/pxsl-tools
 
 The PXSL tools have been also packaged for Debian (thanks Kari Pahula)
 and Red Hat / Fedora.
 
 By the way, you pronounce PXSL like "pixel".
-
-
-* Getting help
-
-If you need help with PXSL, there is a discussion site for PXSL
-users and developers.  Feel free to ask questions and leave your
-comments:
-
-    PXSL Community Forum
-    http://community.moertel.com/ss/space/pxsl
-
-    PXSL FAQs
-    http://community.moertel.com/ss/space/PXSL+FAQs
 
 
 * LICENSE
@@ -116,9 +102,9 @@ for your platform.
 
 In order to build the tools you will need the following:
 
-  - A PXSL source tarball (typically named "pxsl-tools-{version}.tar.gz")
-    http://community.moertel.com/pxsl/sources/
-
+  - A copy of the PXSL source code.  You can get a copy here:
+    https://github.com/tmoertel/pxsl-tools/archive/master.zip
+    
   - A Haskell compiler supporting the Cabal build system.
     I use GHC:  http://www.haskell.org/ghc/
 
@@ -127,26 +113,13 @@ commands.  If you want to install a personal copy of pxslcc instead of
 the doing the default, system-wide installation, uncomment the extra
 command-line flags on the third command.
 
-    $ tar zxvf pxsl-tools-{version}.tar.gz
-    $ cd pxsl-tools-{version}
+    $ unzip pxsl-tools-master.zip
+    $ cd pxsl-tools-master
     $ runhaskell Setup.lhs configure # --user --prefix=$HOME
     $ runhaskell Setup.lhs build
     $ runhaskell Setup.lhs install
 
-(Replace {version} with the version of PXSL that you downloaded.)
-
 That's it.  You should now have a fully functional version of pxslcc.
-
-** RPMs
-
-If you are on a Red Hat or Fedora  Linux system (or a similar
-RPM-based distribution), you can probably find RPMS and SRPMS here:
-
-    http://community.moertel.com/pxsl/RPMS/
-
-Otherwise, you can build custom RPMs using the cabal-rpm tool:
-
-    http://hackage.haskell.org/cgi-bin/hackage-scripts/package/cabal-rpm-0.3.2
 
 
 * Gentle Introduction to PXSL
@@ -1053,7 +1026,7 @@ For this reason, I urge you to take a look at the
 one way that you can use anonymous macros to factor out common code in
 production XSLT stylesheets.
 
-    http://community.moertel.com/pxsl/examples/xsl-menus-w-macros.pxsl
+    https://github.com/tmoertel/pxsl-tools/blob/master/examples/xsl-menus-w-macros.pxsl
 
 ** Automatic PXSL-to-XML conversion via Make
 
