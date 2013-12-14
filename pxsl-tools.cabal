@@ -1,15 +1,14 @@
 Name:                pxsl-tools
 Homepage:            http://community.moertel.com/ss/space/PXSL
-Version:             1.0.1
+Version:             1.0.2
 Stability:           stable
 License:             GPL
 License-file:        LICENSE
 Author:              Tom Moertel <tom@moertel.com>
 Maintainer:          Tom Moertel <tom@moertel.com>
-Copyright:           2003-2008 Thomas G. Moertel <tom@moertel.com>
+Copyright:           2003-2013 Thomas G. Moertel <tom@moertel.com>
 Category:            XML
 Build-type:          Simple
-Build-Depends:       base, mtl >= 1.0, parsec >= 2.0, containers
 Synopsis:            Parsimonious XML Shorthand Language--to-XML compiler
 Description:
   The package contains the pxslcc compiler, which converts
@@ -37,7 +36,8 @@ data-files:
     README
     README.html
 
-Executable:          pxslcc
-Main-is:             pxslcc.hs
-ghc-options:         -O2
-hs-source-dirs:      src
+Executable pxslcc
+    Main-is:             pxslcc.hs
+    Build-Depends:       base, mtl >= 1.0, parsec >= 2.0, containers
+    ghc-options:         -O2
+    hs-source-dirs:      src

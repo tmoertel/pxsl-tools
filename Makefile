@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 # PXSL Makefile
 #
-# CVS: $Id: Makefile,v 1.11 2005/01/27 14:43:52 thor Exp $ 
+# CVS: $Id: Makefile,v 1.11 2005/01/27 14:43:52 thor Exp $
 #
 # Copyright (C) 2003-07 Tom Moertel <tom@moertel.com>
 # Licensed under the terms of the GNU General Public License.
@@ -9,7 +9,7 @@
 #-----------------------------------------------------------------------------
 
 PROJECT          = pxsl
-VERSION     	 = 1.0.1
+VERSION     	 = 1.0.2
 
 TARGETS     	 = dist/build/pxslcc/pxslcc
 
@@ -55,7 +55,7 @@ allstatic : ; make GHC_OPT='-O2 -optl-static' all
 dist : $(DISTDIR)
 bindist : $(BINDISTDIR)
 
-$(DISTDIR) : $(DIST_MANIFEST) 
+$(DISTDIR) : $(DIST_MANIFEST)
 	mkdir -p $@
 	rm -rf $@
 	rsync -avC --delete-excluded $(DIST_MANIFEST) $@/

@@ -104,9 +104,11 @@ In order to build the tools you will need the following:
 
   - A copy of the PXSL source code.  You can get a copy here:
     https://github.com/tmoertel/pxsl-tools/archive/master.zip
-    
+
   - A Haskell compiler supporting the Cabal build system.
     I use GHC:  http://www.haskell.org/ghc/
+
+  - GNU Make (or equivalent)
 
 Just uncompress the tarball and build the project using the following
 commands.  If you want to install a personal copy of pxslcc instead of
@@ -115,8 +117,7 @@ command-line flags on the third command.
 
     $ unzip pxsl-tools-master.zip
     $ cd pxsl-tools-master
-    $ runhaskell Setup.lhs configure # --user --prefix=$HOME
-    $ runhaskell Setup.lhs build
+    $ make
     $ runhaskell Setup.lhs install
 
 That's it.  You should now have a fully functional version of pxslcc.
